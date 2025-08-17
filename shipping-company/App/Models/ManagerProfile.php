@@ -1,0 +1,14 @@
+<?php
+
+namespace App\Models;
+
+use App\Models\BaseModel;
+
+class ManagerProfile extends BaseModel
+{
+    protected $fillable=['user_id','salary','location'];
+
+    public function user(){
+        return $this->belongsTo(User::class,'user_id');
+    }
+}
