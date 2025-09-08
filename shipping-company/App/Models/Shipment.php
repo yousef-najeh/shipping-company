@@ -6,6 +6,13 @@ use App\Models\BaseModel;
 
 class Shipment extends BaseModel
 {
+    protected $fillable = [
+        'user_id',
+        'status',
+        'tracking_number',
+        'shipped_at',
+        'delivered_at',
+    ];
     public function user(){
         return $this->hasOne(User::class,'user_id');
     }

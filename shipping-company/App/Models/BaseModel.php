@@ -17,4 +17,6 @@ class BaseModel extends Model{
     protected $casts = [
         'location' => Point::class,
     ];
+
+    
 }

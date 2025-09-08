@@ -1,6 +1,6 @@
 <?php
 
-use illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ShipmentController;
 
 
