@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Validation\ValidationException;
+
 
 
 
@@ -37,11 +39,16 @@ class AuthController extends Controller
             'email' => 'required|email',
             'password' => 'required|string',
         ]);
+       
 
         if (Auth :: attempt($validated)) {
             $request -> session() -> regenerate();
             return response() -> json(['message' => 'User logged in successfully'], 200);
         }
+
+        throw ValidationException::withMessages([
+            'email' => __('The provided credentials do not match our records.'),
+        ]);
     }
 
     function logout(Request $request){
