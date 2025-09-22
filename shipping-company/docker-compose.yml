@@ -1,0 +1,34 @@
+version: '2'
+
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: dockerfile
+    image: my-laravel-app
+    ports:
+      - "8080:80"
+    volumes:
+      - ./:/var/www/html
+      - /var/www/html/storage
+      - /var/www/html/bootstrap/cache
+      - ./docker/apache/default.conf:/etc/apache2/sites-enabled/000-default.conf
+    working_dir: /var/www/html
+    user: "www-data"
+    depends_on:
+      - database
+
+  database:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456789
+      MYSQL_DATABASE: shipping_company
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: 123456789
+    ports:
+      - "4306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+volumes:
+  db_data:
