@@ -18,6 +18,12 @@ Route::get('/testing', function () {
 });
 
 
+Route::controller(AuthController::class)->group(function () {
+    Route::get('/', 'index');
+    Route::post('/login', 'login')->name('login'); 
+    Route::post('/register', 'register')->name('register');
+    Route::post('/logout', 'logout')->name('logout')->middleware('auth');
+});
 
 Route::controller(AuthController::class)->group(function () {
     Route::get('/', 'index');

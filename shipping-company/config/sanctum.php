@@ -15,9 +15,6 @@ return [
     |
     */
 
-    //
-    // هيني جاي
-    //
 
     'stateful' => explode(',', env('SANCTUM_STATEFUL_DOMAINS', sprintf(
         '%s%s',
