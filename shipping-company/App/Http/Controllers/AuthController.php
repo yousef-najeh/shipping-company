@@ -52,15 +52,11 @@ class AuthController extends Controller
                 'message' => 'User logged in successfully',
                 'user' => Auth::user(),
                 'authenticated' => Auth::check(),
-                'client_token' => $clientToken,
-                'laravel_token' => $laravelToken,
             ], 200);
         }
 
         return response()->json([
             'message' => 'Invalid credentials',
-            'client_token' => $clientToken,
-            'laravel_token' => $laravelToken,
         ], 401);
 }
 
