@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests; 
 
 use App\Models\ManagerProfile;
 use Illuminate\Http\Request;
@@ -10,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 class ManagerController extends Controller
 {
 
-
+    use AuthorizesRequests;
     public function getLocation(Request $request){
         $lat = $request->location['lat'];
         $lng = $request->location['lng'];
@@ -25,6 +26,7 @@ class ManagerController extends Controller
 
     public function index(Request $request)
     {
+        $this->authorize('viewAny', ManagerProfile::class);
         $query = ManagerProfile::with('user');
 
         if ($request->has('first_name')) {
@@ -59,6 +61,7 @@ class ManagerController extends Controller
 
     public function get_by_id($id )
     {
+        $this->authorize('view', ManagerProfile::class);
         try {
             $manager = ManagerProfile::with('user')
                 ->where('manager_profiles.id', $id)
@@ -75,7 +78,7 @@ class ManagerController extends Controller
 
 
     public function store(Request $request){
-        
+        $this->authorize('create', ManagerProfile::class);
         try{
             $manager = ManagerProfile::create([
                 "user_id"=>$request->user_id,
@@ -90,6 +93,7 @@ class ManagerController extends Controller
     }
 
     public function update(Request $request,$id){
+        $this->authorize('update', ManagerProfile::class);
         try{
             $manager = ManagerProfile::findOrFail($id);
             $manager->update([
@@ -104,6 +108,7 @@ class ManagerController extends Controller
     }
 
     public function delete ($id){
+        $this->authorize('delete', ManagerProfile::class);
         try{
             $manager =ManagerProfile::where('id', $id)->delete();
             if (!$manager) {
@@ -116,6 +121,7 @@ class ManagerController extends Controller
     }
 
     public function get_by_salary($minSalary, $maxSalary = null){
+        $this->authorize('viewAny', ManagerProfile::class);
         try{
             $manager = ManagerProfile::with('user')
                 ->orderBy('salary', 'asc')

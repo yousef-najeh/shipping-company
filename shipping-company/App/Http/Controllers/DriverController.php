@@ -1,6 +1,9 @@
 <?php
 namespace App\Http\Controllers;
 
+
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests; 
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\DriverProfile;
@@ -9,7 +12,10 @@ use Illuminate\Support\Facades\DB;
 
 
 class DriverController extends Controller{
-        public function getLocation(Request $request){
+
+    use AuthorizesRequests;
+
+    public function getLocation(Request $request){
         $lat = $request->location['lat'];
         $lng = $request->location['lng'];
 
@@ -23,6 +29,7 @@ class DriverController extends Controller{
 
     public function index(Request $request)
     {
+        $this->authorize('viewAny', DriverProfile::class);
         $query = DriverProfile::with('user');
 
         if ($request->has('first_name')) {
@@ -57,6 +64,7 @@ class DriverController extends Controller{
 
     public function get_by_id($id )
     {
+        $this->authorize('view', DriverProfile::class);
         try {
             $driver = DriverProfile::with('user')
                 ->where('driver_profiles.id', $id)
@@ -73,7 +81,7 @@ class DriverController extends Controller{
 
 
     public function store(Request $request){
-        
+        $this->authorize('create', DriverProfile::class);
         try{
             $driver = DriverProfile::create([
                 "user_id"=>$request->user_id,
@@ -91,6 +99,7 @@ class DriverController extends Controller{
     }
 
     public function update(Request $request,$id){
+        $this->authorize('update', DriverProfile::class);
         try{
             $driver = DriverProfile::findOrFail($id);
             $driver->update([
@@ -107,6 +116,7 @@ class DriverController extends Controller{
     }
 
     public function delete ($id){
+        $this->authorize('delete', DriverProfile::class);
         try{
             $driver =DriverProfile::where('id', $id)->delete();
             if (!$driver) {
@@ -119,6 +129,7 @@ class DriverController extends Controller{
     }
 
     public function get_by_salary($minSalary, $maxSalary = null){
+        $this->authorize('viewAny', DriverProfile::class);
         try{
             $driver = DriverProfile::with('user')
                 ->orderBy('salary', 'asc')

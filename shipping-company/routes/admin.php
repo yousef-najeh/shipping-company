@@ -7,17 +7,17 @@ use App\Http\Controllers\AuthController;
 
 
 
+// Route :: middleware('auth')->group(function () {
+//     Route::get('/admin',[AdminController::class,'index']);
+//     Route::get('/admin/{id}',[AdminController::class,'get_by_id']);
+//     Route::post('/admin',[AdminController::class,'store']);
+//     Route::put('/admin/{id}',[AdminCOntroller::class,"update"]);
+//     Route::delete('/admin/{id}',[AdminController::class,"delete"]);
+// });
 
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout']);
 
 
-Route::get('/admin',[AdminController::class,'index']);
-Route::get('/admin/{id}',[AdminController::class,'get_by_id']);
-Route::post('/admin',[AdminController::class,'store']);
-Route::put('/admin/{id}',[AdminCOntroller::class,"update"]);
-Route::delete('/admin/{id}',[AdminController::class,"delete"]);
+    
 
 
 

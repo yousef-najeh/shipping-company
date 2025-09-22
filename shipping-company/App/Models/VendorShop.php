@@ -5,6 +5,7 @@ namespace App\Models;
 
 use App\Models\BaseModel;
 
+
 class VendorShop extends BaseModel{
 
     protected $fillable = [
@@ -20,22 +21,22 @@ class VendorShop extends BaseModel{
     ];
 
 
-    public function client(){
-        return  $this->belongsTo(Client::class,'client_id');
+    public function user(){
+        return  $this->belongsTo(User::class,'user_id');
     }
     
     public function order(){
         return $this->hasMany(Order::class,'vendor_id');
     }
 
-    public function user(){
+    public function client(){
         return $this->hasOneThrough(
-            User::class,
             Client::class,
+            User::class,
             "id",
             "id",
-            "client_id",
-            "user_id"
+            "user_id",
+            "client_id"
         );
     }
 }

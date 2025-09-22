@@ -29,27 +29,34 @@ class AuthController extends Controller
         ]);
         $validated['password'] = bcrypt($validated['password']);
         $user = User :: create($validated);
+        
         Auth :: login($user);
         return response() -> json(['message' => 'User registered successfully', 'user' => $user], 201);
 
     }
 
     function login(Request $request){
+
+
         $validated = $request->validate([
             'email' => 'required|email',
             'password' => 'required|string',
         ]);
-       
 
-        if (Auth :: attempt($validated)) {
-            $request -> session() -> regenerate();
-            return response() -> json(['message' => 'User logged in successfully'], 200);
-        }
+        if (Auth::attempt($validated)) {
+            $request->session()->regenerate();
+            return response()->json([
+                'message' => 'User logged in successfully',
+                'user' => Auth::user(), 
+                'authenticated' => Auth::check()  
 
-        throw ValidationException::withMessages([
-            'email' => __('The provided credentials do not match our records.'),
-        ]);
+            ], 200);
     }
+
+    throw ValidationException::withMessages([
+        'email' => __('The provided credentials do not match our records.'),
+    ]);
+}
 
     function logout(Request $request){
         Auth :: logout();

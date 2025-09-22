@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests; 
 
 use App\Models\EmployeeProfile;
 use Illuminate\Http\Request;
@@ -10,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 class EmployeeController extends Controller
 {
 
+    use AuthorizesRequests;
 
     public function getLocation(Request $request){
         $lat = $request->location['lat'];
@@ -25,6 +27,7 @@ class EmployeeController extends Controller
 
     public function index(Request $request)
     {
+        $this->authorize('viewAny', EmployeeProfile::class);
         $query = EmployeeProfile::with('user');
 
         if ($request->has('first_name')) {
@@ -59,6 +62,7 @@ class EmployeeController extends Controller
 
     public function get_by_id($id )
     {
+        $this->authorize('view', EmployeeProfile::class);
         try {
             $employee = EmployeeProfile::with('user')
                 ->where('employee_profiles.id', $id)
@@ -75,7 +79,7 @@ class EmployeeController extends Controller
 
 
     public function store(Request $request){
-        
+        $this->authorize('create', EmployeeProfile::class);
         try{
             $employee = EmployeeProfile::create([
                 "user_id"=>$request->user_id,
@@ -90,6 +94,7 @@ class EmployeeController extends Controller
     }
 
     public function update(Request $request,$id){
+        $this->authorize('update', EmployeeProfile::class);
         try{
             $employee = EmployeeProfile::findOrFail($id);
             $employee->update([
@@ -104,6 +109,7 @@ class EmployeeController extends Controller
     }
 
     public function delete ($id){
+        $this->authorize('delete', EmployeeProfile::class);
         try{
             $employee =EmployeeProfile::where('id', $id)->delete();
             if (!$employee) {
@@ -116,6 +122,7 @@ class EmployeeController extends Controller
     }
 
     public function get_by_salary($minSalary, $maxSalary = null){
+        $this->authorize('viewAny', EmployeeProfile::class);
         try{
             $employee = EmployeeProfile::with('user')
                 ->orderBy('salary', 'asc')

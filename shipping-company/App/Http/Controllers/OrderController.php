@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests; 
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -8,8 +9,12 @@ use App\Models\Order;
 
 class OrderController extends Controller{
 
+    use AuthorizesRequests;
+
+
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Order::class);
         $query = Order::query()
             ->with('shipment')
             ->with('itemOrder') 
@@ -90,4 +95,63 @@ class OrderController extends Controller{
         return response()->json(['orders' => $orders]);
     }
 
+    public function get_by_id($id)
+    {
+        $this->authorize('view', Order::class);
+        
+            $order = Order::with('shipment')
+                ->with('itemOrder') 
+                ->with('vendor')
+                ->where('orders.id', $id)
+                ->firstOrFail();
+            if (!$order) {
+                return response()->json(['error' => 'Order not found'], 404);
+            }
+
+            return response()->json(['order' => $order], 200);
+    }
+
+    public function store(Request $request){
+        $this->authorize('create', Order::class);
+        
+            $order = Order::create([
+                "vendor_id"=>$request->vendor_id,
+                "shipment_id"=>$request->shipment_id,
+                "order_status"=>$request->order_status,
+                "size"=>$request->size,
+                "weight"=>$request->weight,
+                "width"=>$request->width,
+                "height"=>$request->height,
+                "length"=>$request->length,
+                "price"=>($request->size * 10) + ($request->weight * 5) + ($request->width * 2) + ($request->height * 2) + ($request->length * 2),
+            ]);
+            return response()->json(['message'=>'Order created successfully','order'=>$order],201);
+    }
+
+    public function update(Request $request,$id){
+        $this->authorize('update', Order::class);
+        
+            $order = Order::findOrFail($id);
+            $order->update([
+                "vendor_id"=>$request->vendor_id,
+                "shipment_id"=>$request->shipment_id,
+                "order_status"=>$request->order_status,
+                "size"=>$request->size,
+                "weight"=>$request->weight,
+                "width"=>$request->width,
+                "height"=>$request->height,
+                "length"=>$request->length,
+                "price"=>($request->size * 10) + ($request->weight * 5) + ($request->width * 2) + ($request->height * 2) + ($request->length * 2),
+            ]);
+            return response()->json(['message'=>'Order updated successfully','order'=>$order],200);
+    }
+
+    public function delete ($id){
+        $this->authorize('delete', Order::class);
+            $order =Order::where('id', $id)->delete();
+            if (!$order) {
+                return response()->json(['message' => 'Order not found'], 404);
+            }
+        return response()->json(['message' => 'Order deleted successfully'], 200);
+    }
 }

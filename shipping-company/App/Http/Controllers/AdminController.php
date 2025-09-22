@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
-
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests; 
 use App\Models\AdminProfile;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
+    use AuthorizesRequests;
 
 
     public function getLocation(Request $request){
@@ -23,8 +24,9 @@ class AdminController extends Controller
     }
 
 
-    public function index(Request $request)
-{
+    public function index(Request $request){
+        $this->authorize('viewAny', AdminProfile::class);
+
         $query = AdminProfile::with('user');
 
         if ($request->has('first_name')) {
@@ -53,8 +55,10 @@ class AdminController extends Controller
         return response()->json(['admins' => $admins], 200);
 }
 
-    public function get_by_id($id )
+    public function show($id )
     {
+                $this->authorize('view', AdminProfile::class);
+
         try {
             $admin = AdminProfile::with('user')
                 ->where('admin_profiles.id', $id)
@@ -72,7 +76,8 @@ class AdminController extends Controller
 
 
     public function store(Request $request){
-        
+        $this->authorize('create', AdminProfile::class);
+
         try{
             $admin = AdminProfile::create([
                 "user_id"=>$request->user_id,
@@ -87,6 +92,7 @@ class AdminController extends Controller
     }
 
     public function update(Request $request,$id){
+        $this->authorize('update', AdminProfile::class);
         try{
             $admin = AdminProfile::findOrFail($id);
             $admin->update([
@@ -100,7 +106,8 @@ class AdminController extends Controller
         }
     }
 
-    public function delete ($id){
+    public function destroy ($id){
+        $this->authorize('delete', AdminProfile::class);
         try{
             $admin =AdminProfile::where('id', $id)->delete();
             if (!$admin) {

@@ -1,5 +1,6 @@
 <?php
 namespace App\Http\Controllers;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests; 
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -7,8 +8,12 @@ use App\Models\Shipment;
 
 class ShipmentController extends Controller
 {
+
+    use AuthorizesRequests;
+
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Shipment::class);
         $query = Shipment::query()->with('user');
 
         if ($request->has('user_id')) {
@@ -36,6 +41,7 @@ class ShipmentController extends Controller
 
     public function get_by_id($id)
     {
+        $this->authorize('view', Shipment::class);
         $shipment = Shipment::find($id);
         if (!$shipment) {
             return response()->json(['message' => 'Shipment not found'], 404);
@@ -45,6 +51,7 @@ class ShipmentController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('create', Shipment::class);
         $request->validate([
             'user_id' => 'required|exists:users,id',
             'status' => 'required|string',
@@ -66,6 +73,7 @@ class ShipmentController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->authorize('update', Shipment::class);
         $request->validate([
             'user_id' => 'sometimes|exists:users,id',
             'status' => 'sometimes|string',
@@ -87,6 +95,7 @@ class ShipmentController extends Controller
 
     public function destroy($id)
     {
+        $this->authorize('delete', Shipment::class);
         $shipment = Shipment::find($id);
         if (!$shipment) {
             return response()->json(['message' => 'Shipment not found'], 404);

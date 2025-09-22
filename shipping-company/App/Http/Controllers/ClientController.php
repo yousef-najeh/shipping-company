@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
-
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests; 
 use App\Models\Client;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 
 class ClientController extends Controller
 {
+    use AuthorizesRequests;
     public function getLocation(Request $request){
         $lat = $request->location['lat'];
         $lng = $request->location['lng'];
@@ -19,8 +20,8 @@ class ClientController extends Controller
     }
 
 
-    public function index(Request $request)
-    {
+    public function index(Request $request){
+        $this->authorize('viewAny', Client::class);
         $query = Client::with('user');
 
         if ($request->has('first_name')) {
@@ -48,6 +49,7 @@ class ClientController extends Controller
 
     public function get_by_id($id )
     {
+        $this->authorize('show', Client::class);
         try {
             $client = Client::with('user')
                 ->where('clients.id', $id)
@@ -63,6 +65,7 @@ class ClientController extends Controller
 
 
     public function store(Request $request){
+        $this->authorize('create', Client::class);
         try{
             $client = Client::create([
                 "user_id"=>$request->user_id,
@@ -76,6 +79,7 @@ class ClientController extends Controller
     }
 
     public function update(Request $request,$id){
+        $this->authorize('update', Client::class);
         try{
             $client = Client::findOrFail($id);
             $client->update([
@@ -89,6 +93,7 @@ class ClientController extends Controller
     }
 
     public function delete ($id){
+        $this->authorize('delete', Client::class);
         try{
             $client =Client::where('id', $id)->delete();
             if (!$client) {

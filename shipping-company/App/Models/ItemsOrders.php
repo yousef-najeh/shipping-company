@@ -7,7 +7,7 @@ use App\Models\BaseModel;
 class ItemsOrders extends BaseModel
 {
     public function item(){
-        return $this->belongsTo(items::class,'item_id');
+        return $this->belongsTo(Item::class,'item_id');
     }
 
     public function order(){

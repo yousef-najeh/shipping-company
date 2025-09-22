@@ -1,7 +1,7 @@
 <?php
-
 namespace App\Http\Controllers;
 
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests; 
 use App\Http\Controllers\Controller;
 use App\Models\VendorShop;
 use Illuminate\Http\Request;
@@ -9,8 +9,11 @@ use Illuminate\Support\Facades\DB;
 
 class VendorShopController extends Controller
 {
+    use AuthorizesRequests;
+
     public function index(Request $request)
     {
+        $this->authorize('viewAny', VendorShop::class);
         $query = VendorShop::query()->with('user');
 
         if ($request->has('shop_name')) {
@@ -36,12 +39,14 @@ class VendorShopController extends Controller
 
     public function get_by_id($id)
     {
+        $this->authorize('view', VendorShop::class);
         $shop = VendorShop::with('client')->findOrFail($id);
         return response()->json(['shop' => $shop]); 
     }
 
     public function store(Request $request)
     {
+        $this->authorize('create', VendorShop::class);
         $request->validate([
             'client_id' => 'required|integer',
             'shop_name' => 'required|string|max:255',
@@ -68,6 +73,7 @@ class VendorShopController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->authorize('update', VendorShop::class);
         $shop = VendorShop::findOrFail($id); 
 
         $location = $this->getLocation($request);
@@ -85,12 +91,14 @@ class VendorShopController extends Controller
 
     public function destroy($id)
     {
+        $this->authorize('delete', VendorShop::class);
         $shop = VendorShop::where('id', $id)->delete();
         return response()->json(['message' => 'shop deleted successfully', 'shop' => $shop]);
     }
 
     private function getLocation(Request $request)
     {
+        
         $lat = $request->location['lat'];
         $lng = $request->location['lng'];
 

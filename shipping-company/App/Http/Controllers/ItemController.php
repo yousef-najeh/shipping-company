@@ -1,13 +1,20 @@
 <?php
 namespace App\Http\Controllers;
 
+
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests; 
+
 use illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Item;
 
 class ItemController extends Controller{
 
+    use AuthorizesRequests;
+
+
     public function index(Request $request){
+        $this->authorize('viewAny', Item::class);
         $query = Item::query()->with('itemsOrders');
 
         if ($request->has('name')){
@@ -22,6 +29,7 @@ class ItemController extends Controller{
     }
 
     public function get_by_id($id){
+        $this->authorize('view', Item::class);
         $item= Item::findOrFail($id);
         return response()->json(['Item'=>$item]);
     }
@@ -31,7 +39,7 @@ class ItemController extends Controller{
 
     public function store(Request $request)
     {
-        // dd($request->method()); 
+        $this->authorize('create', Item::class);
         $validated = $request->validate([
             'name'  => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
@@ -43,12 +51,14 @@ class ItemController extends Controller{
 
 
     public function update(Request $request,$id){
+        $this->authorize('update', Item::class);
         $item= Item::where('id',$id)->get();
         $item->update($request->all());
         return response()->json(["item",$item,"message"=>"the item has been updated successfully"]);
     }
 
     public function destroy($id){
+        $this->authorize('delete', Item::class);
         $item = Item::findOrFail($id);
         $item->delete($id);
         return response()->json(['message'=>"item delete successfully"]);
