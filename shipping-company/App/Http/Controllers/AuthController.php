@@ -35,8 +35,10 @@ class AuthController extends Controller
 
     }
 
-    function login(Request $request){
+    public function login(Request $request){
 
+        $clientToken = $request->header('X-XSRF-TOKEN'); 
+        $laravelToken = $request->session()->token();
 
         $validated = $request->validate([
             'email' => 'required|email',
@@ -45,17 +47,21 @@ class AuthController extends Controller
 
         if (Auth::attempt($validated)) {
             $request->session()->regenerate();
+
             return response()->json([
                 'message' => 'User logged in successfully',
-                'user' => Auth::user(), 
-                'authenticated' => Auth::check()  
-
+                'user' => Auth::user(),
+                'authenticated' => Auth::check(),
+                'client_token' => $clientToken,
+                'laravel_token' => $laravelToken,
             ], 200);
-    }
+        }
 
-    throw ValidationException::withMessages([
-        'email' => __('The provided credentials do not match our records.'),
-    ]);
+        return response()->json([
+            'message' => 'Invalid credentials',
+            'client_token' => $clientToken,
+            'laravel_token' => $laravelToken,
+        ], 401);
 }
 
     function logout(Request $request){
